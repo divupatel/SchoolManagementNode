@@ -18,4 +18,6 @@ routes.get('/failFaculty', (req,res)=>{
 
 routes.put('/editfacultyProfile/:id',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.editfacultyProfile);
 routes.post('/changeFacultyPass',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.changeFacultyPass);
+routes.post('/sendMail',FacultyCtl.sendMail);
+routes.post('/updatePassword',FacultyCtl.updatePassword);
 module.exports = routes;
