@@ -2,12 +2,12 @@ const express = require('express');
 const port = 8000;
 
 const app = express();
-const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://divupatel22199:HBMI3ZdRIeUHUe4z@cluster0.zhu7k.mongodb.net/SchoolManagement').then(console.log("Db is connected")).catch((err)=>{
-    console.log("Db not connected");
-});
+// const mongoose = require('mongoose');
+// mongoose.connect('mongodb+srv://divupatel22199:HBMI3ZdRIeUHUe4z@cluster0.zhu7k.mongodb.net/SchoolManagement').then(console.log("Db is connected")).catch((err)=>{
+//     console.log("Db not connected");
+// });
 
-// const db = require('./config/db')
+const db = require('./config/db')
 
 const jwtStrategy = require('./config/passport_jwt-Strtagy');
 const session = require('express-session');
@@ -30,6 +30,7 @@ app.use(passport.session());
 
 
 app.use('/api',require('./routes/api/v1/adminRoutes'));
+app.use('/api/faculty',require('./routes/api/v1/facultyRoutes'));
 
 app.listen(port , (err)=>{
     if(err){

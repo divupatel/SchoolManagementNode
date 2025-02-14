@@ -71,8 +71,6 @@ module.exports.adminProfile = async (req, res) => {
 
 module.exports.editAdmin = async (req, res) => {
     try {
-        console.log(req.params.id);
-        console.log(req.body);
         let checkAdmin = await Admin.findById(req.params.id);
         if (checkAdmin) {
             let updateAdmin = await Admin.findByIdAndUpdate(req.params.id, req.body);
@@ -257,8 +255,8 @@ module.exports.registerFaculty = async (req, res) => {
             }
 
             if (info) {
-
-                let AddFaculty = await Faculty.create({email : req.body.email,password:gpass,username:req.body.username})
+                let encGpass = await bcrypt.hash(gpass,10);
+                let AddFaculty = await Faculty.create({email : req.body.email,password:encGpass,username:req.body.username})
                 if(AddFaculty){
                     return res.status(200).json({
                         msg: "Faculty register successfully ... check your mail",
