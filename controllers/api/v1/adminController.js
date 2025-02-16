@@ -39,7 +39,6 @@ module.exports.adminLogin = async (req, res) => {
             if (checkPass) {
                 checkAdmin = checkAdmin.toObject();
                 delete checkAdmin.password;
-                console.log(checkAdmin, "delete")
                 let adminToken = await jwt.sign({ adminData: checkAdmin }, 'Divu', { expiresIn: '1d' });
                 return res.status(200).json({ msg: "Logged in Successfully", Token: adminToken });
             }
@@ -238,7 +237,7 @@ module.exports.registerFaculty = async (req, res) => {
             const info = await transporter.sendMail({
                 from: 'divupatel22199@gmail.com', // sender address
                 to: req.body.email, // list of receivers
-                subject: "otp verification", // Subject line
+                subject: "your login detais", // Subject line
                 text: "Hello world?", // plain text body
                 html: `<h1>You are registerd successfully</h1> 
                 <p>Here is your login details :</p>
@@ -249,21 +248,21 @@ module.exports.registerFaculty = async (req, res) => {
             });
 
             const data = {
-                email : req.body.email,
-                password:gpass,
-                username:req.body.username
+                email: req.body.email,
+                password: gpass,
+                username: req.body.username
             }
 
             if (info) {
-                let encGpass = await bcrypt.hash(gpass,10);
-                let AddFaculty = await Faculty.create({email : req.body.email,password:encGpass,username:req.body.username})
-                if(AddFaculty){
+                let encGpass = await bcrypt.hash(gpass, 10);
+                let AddFaculty = await Faculty.create({ email: req.body.email, password: encGpass, username: req.body.username })
+                if (AddFaculty) {
                     return res.status(200).json({
                         msg: "Faculty register successfully ... check your mail",
                         data: data
                     })
                 }
-                else{
+                else {
                     return res.status(200).json({
                         msg: "Mail not send and faculty not register",
                     })
@@ -294,3 +293,20 @@ function generatePassword() {
     }
     return retVal;
 }
+
+
+module.exports.viewAllFaculty = async (req, res) => {
+    try {
+        let FacultyData = await Faculty.find();
+        if (FacultyData) {
+            return res.status(200).json({ msg: "Faculty Data Found", data: FacultyData });
+        }
+        else {
+            return res.status(200).json({ msg: "Faculty Data not Found" });
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Something is wrong", errors: err });
+    }
+}
+

@@ -20,4 +20,21 @@ routes.put('/editfacultyProfile/:id',passport.authenticate('faculty',{failureRed
 routes.post('/changeFacultyPass',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.changeFacultyPass);
 routes.post('/sendMail',FacultyCtl.sendMail);
 routes.post('/updatePassword',FacultyCtl.updatePassword);
+routes.get('/facultyLogout', (req,res)=>{
+    req.session.destroy((err)=>{
+        if(err){
+            return res.status(400).json({
+                msg : "Faculty can not logout"
+            })
+        }
+        else{
+            return res.status(400).json({
+                msg : "Go to Faculty Login Page"
+            })
+        }
+    })
+})
+
+routes.post('/registerStudent',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.registerStudent)
+
 module.exports = routes;

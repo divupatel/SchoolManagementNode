@@ -2,6 +2,7 @@ const Faculty = require('../../../models/FacultyModel');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
+const Student = require('../../../models/StudentModel');
 
 
 module.exports.facultyLogin = async (req, res) => {
@@ -11,6 +12,8 @@ module.exports.facultyLogin = async (req, res) => {
         if (checkMail) {
             let checkPass = await bcrypt.compare(req.body.password, checkMail.password);
             if (checkPass) {
+                checkMail = checkMail.toObject();
+                delete checkMail.password;
                 let facultyToken = jwt.sign({ facultyToken: checkMail }, 'FRNW', { expiresIn: '1h' });
                 return res.status(200).json({ msg: "Login Successfully", Token: facultyToken });
             }
@@ -177,3 +180,89 @@ module.exports.updatePassword = async (req,res)=>{
         return res.status(400).json({ msg: "Something is wrong", errors: err });
     }
 }
+
+module.exports.registerStudent = async (req,res)=>{
+    try{
+        console.log(req.body);
+        let checkEmail = await Student.findOne({email : req.body.email});
+        if(!checkEmail){
+            var gpass = generatePassword();
+            var link = 'http://localhost:8000/api/studentRegister';
+
+            const transporter = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 587,
+                secure: false, // true for port 465, false for other ports
+                auth: {
+                    user: "divupatel22199@gmail.com",
+                    pass: "gtma soun wcbc oatn",
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            });
+
+            const info = await transporter.sendMail({
+                from: 'divupatel22199@gmail.com', // sender address
+                to: req.body.email, // list of receivers
+                subject: "your login detais", // Subject line
+                text: "Hello world?", // plain text body
+                html: `<h1>You are registerd successfully</h1> 
+                <p>Here is your login details :</p>
+                <p>your email : ${req.body.email}</p>
+                <p>your username : ${req.body.username}</p>
+                <p>your password :${gpass}</p>
+                <p>your link to login :${link}</p>`, // html body
+            });
+
+            console.log("info ", info)
+            const data = {
+                email: req.body.email,
+                password: gpass,
+                username: req.body.username
+            }
+
+            if (info) {
+                let encGpass = await bcrypt.hash(gpass, 10);
+                let AddStudent = await Student.create({ email: req.body.email, password: encGpass, username: req.body.username })
+                if (AddStudent) {
+                    return res.status(200).json({
+                        msg: "Faculty register successfully ... check your mail",
+                        data: data
+                    })
+                }
+                else {
+                    return res.status(200).json({
+                        msg: "Mail not send and faculty not register",
+                    })
+                }
+            }
+            else {
+                return res.status(200).json({
+                    msg: "Something wrong to send mail"
+                })
+            }
+           
+        }
+        else{
+            return res.status(200).json({
+                msg: "Email already exist"
+            })
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Something is wrong", errors: err });
+    }
+}
+
+function generatePassword() {
+    var length = 5,
+        charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
+        retVal = "";
+    for (var i = 0, n = charset.length; i < length; ++i) {
+        retVal += charset.charAt(Math.floor(Math.random() * n));
+    }
+    return retVal;
+}
+
+// lapz vfgb vpqm lflg

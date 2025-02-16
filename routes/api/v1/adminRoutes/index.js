@@ -44,6 +44,7 @@ routes.post('/changeAdminPass',passport.authenticate('jwt',{failureRedirect : '/
 routes.post('/sendMail',AdminCtl.sendMail);
 routes.post('/updatePassword',AdminCtl.updatePassword);
 routes.post('/registerFaculty',passport.authenticate('jwt',{failureRedirect : '/api/adminFailLogin'}),AdminCtl.registerFaculty);
+routes.get('/viewAllFaculty',passport.authenticate('jwt',{failureRedirect : '/api/adminFailLogin'}),AdminCtl.viewAllFaculty);
 
 
 module.exports = routes;
