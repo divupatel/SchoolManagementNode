@@ -36,5 +36,9 @@ routes.get('/facultyLogout', (req,res)=>{
 })
 
 routes.post('/registerStudent',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.registerStudent)
+routes.get('/viewAllStudents',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.viewAllStudents)
+routes.post('/addCourse',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.addCourse)
+routes.put('/editCourse/:id',passport.authenticate('faculty',{failureRedirect:'/api/faculty/failFaculty'}),FacultyCtl.editCourse)
+
 
 module.exports = routes;

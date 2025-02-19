@@ -3,12 +3,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const nodemailer = require("nodemailer");
 const Student = require('../../../models/StudentModel');
-
+const Course = require('../../../models/CourseModel');
 
 module.exports.facultyLogin = async (req, res) => {
     try {
         let checkMail = await Faculty.findOne({ email: req.body.email });
-        console.log(checkMail)
         if (checkMail) {
             let checkPass = await bcrypt.compare(req.body.password, checkMail.password);
             if (checkPass) {
@@ -41,8 +40,6 @@ module.exports.facultyProfile = async (req, res) => {
 
 module.exports.editfacultyProfile = async (req, res) => {
     try {
-        console.log(req.body)
-        console.log(req.params.id);
         let checkfaculty = await Faculty.findById(req.params.id);
         if (checkfaculty) {
             let updateFaculty = await Faculty.findByIdAndUpdate(req.params.id, req.body);
@@ -183,7 +180,6 @@ module.exports.updatePassword = async (req,res)=>{
 
 module.exports.registerStudent = async (req,res)=>{
     try{
-        console.log(req.body);
         let checkEmail = await Student.findOne({email : req.body.email});
         if(!checkEmail){
             var gpass = generatePassword();
@@ -215,7 +211,6 @@ module.exports.registerStudent = async (req,res)=>{
                 <p>your link to login :${link}</p>`, // html body
             });
 
-            console.log("info ", info)
             const data = {
                 email: req.body.email,
                 password: gpass,
@@ -265,4 +260,53 @@ function generatePassword() {
     return retVal;
 }
 
-// lapz vfgb vpqm lflg
+
+module.exports.viewAllStudents = async (req,res)=>{
+    try{
+        let studentData = await Student.find();
+        if(studentData){
+            return res.status(200).json({ msg: "Student Data Found",data : studentData });
+        }
+        else{
+            return res.status(200).json({ msg: "Student Data not Found" });
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Something is wrong", errors: err });
+    }
+}
+
+module.exports.addCourse = async (req,res) =>{
+    try{
+        console.log(req.body);
+        let addCourse = await Course.create(req.body);
+        if(addCourse){
+            return res.status(200).json({ msg: "Course added",data:addCourse});
+        }
+        else{
+            return res.status(400).json({ msg: "Course can not add"});
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Something is wrong", errors: err });
+    }
+}
+
+module.exports.editCourse = async (req,res)=>{
+    try{
+        console.log(req.body);
+        console.log(req.params.id);
+        let findData = await Course.findByIdAndUpdate(req.params.id,req.body);
+        if(findData){
+            let updateData = await Course.findById(req.params.id);
+            return res.status(200).json({msg : "Data Updated Successfully",data : updateData});
+        }
+        else{
+            return res.status(400).json({ msg: "Something is wrong,Data not Updated"});
+        }
+    }
+    catch (err) {
+        return res.status(400).json({ msg: "Something is wrong", errors: err });
+    }
+}
+
